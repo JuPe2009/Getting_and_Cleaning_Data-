@@ -1,0 +1,53 @@
+# Question 2
+
+library(jpeg)
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg", "jeff.jpg", mode="wb")
+dataJPEG <- readJPEG("jeff.jpg",native=TRUE)
+quantile(dataJPEG,probs=c(0.3,0.8))
+      30%       80% 
+-15259150 -10575416 
+
+# Question 3
+
+fileGDPdata <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+download.file(fileGDPdata, "./GDPdata.csv")
+GDPdata <- read.csv("./GDPdata.csv",skip=4, nrows=231, col.names = c("CountryCode","Ranking","3","Country","GDP","5","6","7","8","9"))
+
+fileedudata <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+download.file(fileedudata, "./edudata.csv")
+educationaldata <- read.csv("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv")
+
+## subset of th GDPdata frame
+GDPdata <- GDPdata [,c(1,2,4,5)]
+
+## convert GDP to numeric
+GDPdata$GDP <- as.numeric(gsub(",","",GDPdata$GDP))
+
+mergeddata <- merge(GDPdata,educationaldata, by="CountryCode")
+
+## sorting data by Ranking
+sorteddata <- order(mergeddata$Ranking, decreasing=TRUE, na.last=NA)
+
+## number of matched countries
+length(sorteddata)
+
+## obtaing the 13th Country in the list
+mergeddata[sorteddata[13],3]
+
+# Question 4
+mergeddata <- tbl_df(mergeddata)
+HighIncomeOECD <- filter(mergeddata, Income.Group == "High income: OECD")
+
+mean(HighIncomeOECD$Ranking, na.rm = TRUE)
+[1] 32.96667
+
+mean(HighIncomeNonOECD$Ranking, na.rm = TRUE)
+[1] 91.91304
+
+# Question 5
+arranged <- arrange(mergeddata, Ranking)
+Big38 <- slice(arranged, 1:38)
+
+nrow(filter(Big38, Income.Group == "Lower middle income"))
+[1] 5
+
