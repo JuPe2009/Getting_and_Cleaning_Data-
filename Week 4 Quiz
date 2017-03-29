@@ -1,0 +1,86 @@
+
+# Question 1
+
+fileHousingIdaho <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+
+download.file(fileHousingIdaho, "./HousingIdaho.csv")
+
+HousingIdahoData <- read.csv("./HousingIdaho.csv")
+
+namesHIData <- names(HousingIdahoData)
+
+wgtpsplitlist <- strsplit(namesHIData, "wgtp")
+
+wgtpsplitlist[123]
+[[1]]
+[1] ""   "15"
+
+# Question 2
+
+fileGDPdata <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+
+download.file(fileGDPdata, "./GDPdata.csv")
+
+GDPdata <- read.csv("./GDPdata.csv",skip=4, nrows=231, col.names = c("CountryCode","Ranking","3","Country","GDP","5","6","7","8","9"))
+
+## subset of th GDPdata frame
+GDPdata <- GDPdata [,c(1,2,4,5)]
+
+## convert GDP to numeric
+GDPdata$GDP <- as.numeric(gsub(",","",GDPdata$GDP))
+
+GDPdataranked <- GDPdata[which(as.numeric(GDPdata$Ranking) > 0),]
+
+averageGDP <- mean(GDPdataranked$GDP, na.rm = TRUE)
+
+averageGDP
+[1] 377652.4
+
+# Question 3
+
+length(grep("^United",GDPdata$Country))
+[1] 3
+
+# Question 4
+
+fileGDPdata <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+
+download.file(fileGDPdata, "./GDPdata.csv")
+
+GDPdata <- read.csv("./GDPdata.csv",skip=4, nrows=231, col.names = c("CountryCode","Ranking","3","Country","GDP","5","6","7","8","9"))
+
+fileedudata <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+
+download.file(fileedudata, "./edudata.csv")
+
+educationaldata <- read.csv("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv")
+
+## subset of th GDPdata frame
+
+GDPdata <- GDPdata [,c(1,2,4,5)]
+
+## convert GDP to numeric
+
+GDPdata$GDP <- as.numeric(gsub(",","",GDPdata$GDP))
+
+mergeddata <- merge(GDPdata,educationaldata, by="CountryCode")
+
+## sorting data by Ranking
+
+length(grep("[Ff]iscal.[Yy]ear.[Ee]nd.*[Jj]une",mergeddata$Special.Notes))
+[1] 13
+
+# Question 5
+
+library(quantmod)
+amzn = getSymbols("AMZN",auto.assign=FALSE)
+sampleTimes = index(amzn)
+
+year2012 <- sampleTimes[which(year(sampleTimes)=="2012")]
+length(year2012)
+[1] 250
+
+monday2012 <- year2012[which(wday(year2012)==2)]
+length(monday2012)
+[1] 47
+
